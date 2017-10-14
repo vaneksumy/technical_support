@@ -1,0 +1,93 @@
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+pid        /home/nod32/work/logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+	log_format IOS_log_format 
+'$remote_addr - -=  $remote_user =-  [$time_local] "$request" '
+'Код $status "$http_user_agent"';
+	access_log  /home/nod32/work/logs/access.log IOS_log_format;
+	error_log  /home/nod32/work/logs/error.log;
+    sendfile        on;
+    keepalive_timeout  65;
+
+server {
+        listen       8081;
+        server_name  ESUP-01;
+	root /home/nod32/mirror;
+	index  index.html index.htm;
+if ($http_user_agent ~* ^(Chrome|Wget|aria2|NOD32view|perl|php|curl|Google|Yandex|Yahoo)|(Mirror|spider|bot|Parser|RSS|grab)) {    return 403;  }  
+location ~* ^.+.(htaccess|htpasswd|pl|cqi|sh|sql|conf|tmp)$ {    return 403;  }	
+
+	error_page  401              /html/401.html;
+	error_page  403              /html/403.html;
+	error_page  404              /html/404.html;
+    error_page   500 502 503 504  /html/50x.html;
+    location = /html/50x.html {
+    root   /html;
+        }
+
+
+location ~ /html/ {
+		auth_basic           "ESET Download Software";
+                auth_basic_user_file /home/nod32/users/install.txt;
+                autoindex on;
+}
+		
+location ~ /install/ {
+		auth_basic           "ESET Download Software";
+		auth_basic_user_file /home/nod32/users/install.txt;
+	        autoindex on;
+}		
+		
+location ~ /v8 {
+		auth_basic           "ESET Update site v8";
+		auth_basic_user_file /home/nod32/users/pwd.txt;
+        autoindex on;
+}
+location ~ /v7 {
+		auth_basic           "ESET Update site v7";
+		auth_basic_user_file /home/nod32/users/pwd.txt;
+        autoindex on;
+}
+location ~ /v10 {
+		auth_basic           "ESET Update site v10";
+		auth_basic_user_file /home/nod32/users/pwd.txt;
+        autoindex on;
+}
+location ~ /v5 {
+		auth_basic           "ESET Update site v5";
+		auth_basic_user_file /home/nod32/users/pwd.txt;
+        autoindex on;
+}
+location / {
+		if ($http_user_agent ~* "^ESS.*BPC.8"){
+		rewrite ^(.*)$ /v8$1 break;
+}
+		if ($http_user_agent ~* "^ESS.*BPC.7"){
+		rewrite ^(.*)$ /v7$1 break;
+}
+		if ($http_user_agent ~* "^ESS.*BPC.6"){
+		rewrite ^(.*)$ /v6$1 break;
+}
+		if ($http_user_agent ~* "^ESS.*BPC.5"){
+		rewrite ^(.*)$ /v5$1 break;
+}
+}
+
+	auth_basic           "ESET Update site";
+	auth_basic_user_file /home/nod32/users/pwd.txt;
+	autoindex on;
+}
+}
