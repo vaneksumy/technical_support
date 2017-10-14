@@ -56,11 +56,7 @@ location ~ /v8 {
 		auth_basic_user_file /home/nod32/users/pwd.txt;
         autoindex on;
 }
-location ~ /v7 {
-		auth_basic           "ESET Update site v7";
-		auth_basic_user_file /home/nod32/users/pwd.txt;
-        autoindex on;
-}
+
 location ~ /v10 {
 		auth_basic           "ESET Update site v10";
 		auth_basic_user_file /home/nod32/users/pwd.txt;
